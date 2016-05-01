@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+
+from parser import pcapToMatrix
+
+trainingPcap = '/home/cb/Desktop/training.pcap'
+slammerPcap = '/home/cb/Desktop/slammer.pcap'
+manInTheMiddlePcap = '/home/cb/Desktop/manInTheMiddle.pcap'
+largePcap = '/home/cb/Desktop/large.pcap'
+dnsPcap = '/home/cb/Desktop/dns-remoteshell.pcap'
+
+trainingMatrix = '/home/cb/Desktop/trainingMatrix.txt'
+slammerMatrix = '/home/cb/Desktop/slammerMatrix.txt'
+manInTheMiddleMatrix = '/home/cb/Desktop/manInTheMiddleMatrix.txt'
+largeMatrix = '/home/cb/Desktop/large.txt'
+dnsMatrix = '/home/cb/Desktop/dns-remoteshell.txt'
+
+pcapToMatrix(dnsPcap, dnsMatrix)
+pcapToMatrix(trainingPcap, trainingMatrix)
+pcapToMatrix(slammerPcap, slammerMatrix)
+pcapToMatrix(manInTheMiddlePcap, manInTheMiddleMatrix)
+pcapToMatrix(largePcap, largeMatrix)
