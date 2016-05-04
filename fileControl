@@ -16,6 +16,6 @@ dnsMatrix = '/home/cb/Desktop/dns-remoteshell.txt'
 
 pcapToMatrix(dnsPcap, dnsMatrix)
 pcapToMatrix(trainingPcap, trainingMatrix)
-pcapToMatrix(slammerPcap, slammerMatrix)
+#pcapToMatrix(slammerPcap, slammerMatrix)
 pcapToMatrix(manInTheMiddlePcap, manInTheMiddleMatrix)
-pcapToMatrix(largePcap, largeMatrix)
+#pcapToMatrix(largePcap, largeMatrix)

@@ -1,6 +1,6 @@
       #!/usr/bin/env python
 
-import dpkt
+import dpkt, socket, struct
 import datetime
 import socket
 import numpy as np
@@ -8,12 +8,8 @@ import numpy as np
 #Convert the ip address to a value
 #Uses the method from https://infowaves.eu/tutorials/iptonumber.php
 def ipToNumber(ip):
-    d = ip.split('.');
-    n=d[0]* pow(256,3);
-    n+=d[1]* pow(256,2);
-    n+=d[2]*256;
-    n+=d[3];
-    return n;
+    packedIP = socket.inet_aton(ip)
+    return struct.unpack("!L", packedIP)[0]
 
 #Convert MAC to string
 def mac_addr(address):
@@ -59,9 +55,9 @@ def pcapToMatrix(pcapFile, matrixFile):
             length = ip.len           
             
             #Build a row and insert the row into the array.
-            row = [sourceMac, destMac, srcIP, destIP, length, ttl, do_not_fragment, more_fragments, fragment_offset]
+            row = [srcIP, destIP, length, ttl, do_not_fragment, more_fragments, fragment_offset]
             thisArray.append(row)
-            output = np.array(thisArray).reshape(len(row), len(thisArray))
+            output = np.array(thisArray)
             
-    np.savetxt(matrixFile, output, fmt="%s")
+    np.savetxt(matrixFile, output, fmt="%i")
     return
