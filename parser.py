@@ -57,7 +57,8 @@ def pcapToMatrix(pcapFile, matrixFile):
             #Build a row and insert the row into the array.
             row = [srcIP, destIP, length, ttl, do_not_fragment, more_fragments, fragment_offset]
             thisArray.append(row)
-            output = np.array(thisArray)
+            output = np.matrix(thisArray)
+            
             
     np.savetxt(matrixFile, output, fmt="%i")
     return
