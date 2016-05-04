@@ -1,0 +1,14 @@
+#!/usr/bin/env python
+
+import dpkt
+import datetime
+import socket
+import numpy as np
+
+#Convert the ip address to a value
+#Uses the method from https://infowaves.eu/tutorials/iptonumber.php
+
+
+d = str(123)
+
+print d
