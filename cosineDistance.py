@@ -16,17 +16,21 @@ for i in trainingMatrix:
         summation[index] = summation[index] + value
 for index, value in enumerate(summation):
     trainingAverage[index] = summation[index]/len(trainingMatrix)
-
-
-#Function to compare each packet in the unknown capture to the average of the 
-#training packets.      
-def findEuclideanDistance(x,y):
-    for index, value in enumerate(y):
-        print euclidean_distance(x, value);      
     
+    #Function to compare each packet in the unknown capture to the average of the 
+#training packets.      
+def cosineDistance(x,y):
+    for index, value in enumerate(y):
+        print cosine_similarity(x, value);       
+
+def square_rooted(x): 
+   return round(sqrt(sum([a*a for a in x])),3)
  
-def euclidean_distance(x,y): 
-  return sqrt(sum(pow(a-b,2) for a, b in zip(x, y)))
+def cosine_similarity(x,y):
+ 
+ numerator = sum(a*b for a,b in zip(x,y))
+ denominator = square_rooted(x)*square_rooted(y)
+ return round(numerator/float(denominator),3)
   
-findEuclideanDistance(trainingAverage, trainingMatrix)  
-findEuclideanDistance(trainingAverage, manInTheMiddleMatrix)
+cosineDistance(trainingAverage, trainingMatrix)  
+cosineDistance(trainingAverage, manInTheMiddleMatrix)
