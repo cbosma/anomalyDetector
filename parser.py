@@ -7,6 +7,7 @@ import numpy as np
 
 #Convert the ip address to a value
 #Uses the method from https://infowaves.eu/tutorials/iptonumber.php
+#Not needed as of 5/7/2016 but keeping around just in case.
 def ipToNumber(ip):
     packedIP = socket.inet_aton(ip)
     return struct.unpack("!L", packedIP)[0]
@@ -49,13 +50,19 @@ def pcapToMatrix(pcapFile, matrixFile):
             do_not_fragment = bool(ip.off & dpkt.ip.IP_DF)
             more_fragments = bool(ip.off & dpkt.ip.IP_MF)
             fragment_offset = ip.off & dpkt.ip.IP_OFFMASK
-            srcIP = ipToNumber((ip_to_str(ip.src)))
-            destIP = ipToNumber((ip_to_str(ip.dst)))
+            srcOctOne = int(ip_to_str(ip.src).split('.')[0])
+            srcOctTwo = int(ip_to_str(ip.src).split('.')[1])
+            srcOctThree = int(ip_to_str(ip.src).split('.')[2])
+            srcOctFour = int(ip_to_str(ip.src).split('.')[3])
+            dstOctOne = int(ip_to_str(ip.dst).split('.')[0])
+            dstOctTwo = int(ip_to_str(ip.dst).split('.')[1])
+            dstOctThree = int(ip_to_str(ip.dst).split('.')[2])
+            dstOctFour = int(ip_to_str(ip.dst).split('.')[3])
             ttl = ip.ttl
             length = ip.len           
             
             #Build a row and insert the row into the array.
-            row = [srcIP, destIP, length, ttl, do_not_fragment, more_fragments, fragment_offset]
+            row = [srcOctOne, srcOctTwo, srcOctThree, srcOctFour, dstOctOne, dstOctTwo, dstOctThree, dstOctFour, length, ttl]
             thisArray.append(row)
             output = np.matrix(thisArray)
             
