@@ -1,8 +1,6 @@
-      #!/usr/bin/env python
+#!/usr/bin/env python
 
-import dpkt, socket, struct
-import datetime
-import socket
+import dpkt, pcap, struct, socket, os
 import numpy as np
 
 #Convert the ip address to a value
@@ -20,33 +18,31 @@ def mac_addr(address):
 def ip_to_str(address):
     return socket.inet_ntop(socket.AF_INET, address)
 
-def pcapToMatrix(pcapFile, matrixFile):
-    inFile = open(pcapFile, 'rw')
-    outFile = open(matrixFile, 'w+')
-    pcap = dpkt.pcap.Reader(inFile)
 
+#Takes an input pcap, parses out the goodies and the whatnots and plops it into a matrix file.
+#It also returns an list called jsonList that will be used to feed Kibana
+def pcapToMatrix(filename):
+    inFile = open(filename, 'rw')
+    dataMatrix = open(os.path.splitext(filename)[0] + 'Matrix.txt' , 'w+')
+    pcap = dpkt.pcap.Reader(inFile)
     thisArray = []
-    count = 0
-    
-    # For each packet in the pcap process the contents
-    for timestamp, buf in pcap:
-        count = count +1
-    
-        # The timestamp in UTC
-        ts = str(datetime.datetime.utcfromtimestamp(timestamp))
-    
+# For each packet in the pcap process the contents
+    for ts, buf in pcap:
+   
         # Unpack the Ethernet frame (mac src/dst, ethertype)
         eth = dpkt.ethernet.Ethernet(buf)
-        sourceMac = mac_addr(eth.src)
-        destMac = mac_addr(eth.dst)
-        ethType = eth.type
-    
+
         # Make sure the Ethernet frame contains an IetP packet
         if eth.type == dpkt.ethernet.ETH_TYPE_IP:
             # Now unpack the data within the Ethernet frame (the IP packet)
             # Pulling out src, dst, length, fragment info, TTL, and Protocol
             ip = eth.data
-        
+            try:
+                srcPort = ip.data.sport
+                dstPort = ip.data.dport
+            except AttributeError:
+                srcPort = 0
+                dstPort = 0            
             do_not_fragment = bool(ip.off & dpkt.ip.IP_DF)
             more_fragments = bool(ip.off & dpkt.ip.IP_MF)
             fragment_offset = ip.off & dpkt.ip.IP_OFFMASK
@@ -62,10 +58,8 @@ def pcapToMatrix(pcapFile, matrixFile):
             length = ip.len           
             
             #Build a row and insert the row into the array.
-            row = [srcOctOne, srcOctTwo, srcOctThree, srcOctFour, dstOctOne, dstOctTwo, dstOctThree, dstOctFour, length, ttl]
+            row = [srcOctOne, srcOctTwo, srcOctThree, srcOctFour, dstOctOne, dstOctTwo, dstOctThree, dstOctFour, srcPort, dstPort, length, ttl]
             thisArray.append(row)
             output = np.matrix(thisArray)
             
-            
-    np.savetxt(matrixFile, output, fmt="%i")
-    return
+    np.savetxt(dataMatrix, output, fmt="%i")
