@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-from parser import pcapToMatrix
 from dataEvaluation import dataEval
 
 trainingPcap = '/home/cb/Desktop/training.pcap'
@@ -8,8 +7,10 @@ slammerPcap = '/home/cb/Desktop/slammer.pcap'
 manInTheMiddlePcap = '/home/cb/Desktop/manInTheMiddle.pcap'
 largePcap = '/home/cb/Desktop/large.pcap'
 dnsPcap = '/home/cb/Desktop/dns-remoteshell.pcap'
+teardropPcap = '/home/cb/Desktop/teardrop.cap'
 
+dataEval(trainingPcap, trainingPcap)
 dataEval(trainingPcap, manInTheMiddlePcap)
 dataEval(trainingPcap, dnsPcap)
-#dataEval(trainingPcap, slammerPcap)
-dataEval(trainingPcap, largePcap)
+dataEval(trainingPcap, slammerPcap)
+dataEval(trainingPcap, teardropPcap)

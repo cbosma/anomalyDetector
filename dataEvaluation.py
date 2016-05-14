@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 
-import os, dpkt, datetime, json
+import os, dpkt, datetime, json, ntpath
 from parser import pcapToMatrix
 from parser import mac_addr, ip_to_str
 from euclideanDistance import euclidean_distance
 from cosineDistance import cosine_similarity
 from averageKnown import averageKnownMatrix
 from minkowskiDistance import minkowski_distance
+
+def path_leaf(path):
+    head, tail = ntpath.split(path)
+    return tail or ntpath.basename(head)
 
 def dataEval(trainingPcap, testPcap):
     
@@ -15,15 +19,18 @@ def dataEval(trainingPcap, testPcap):
     pcapToMatrix(testPcap)
     
     #Open all the needed files
-    jsonFile = os.path.splitext(trainingPcap)[0] + '.json'
+    baseName = path_leaf(os.path.splitext(testPcap)[0])
+    jsonFile = os.path.splitext(testPcap)[0] + '.json'
     jsonFile = open(jsonFile, 'a')
     trainingMatrix = os.path.splitext(trainingPcap)[0] + 'Matrix.txt'
-    testMatrix = os.path.splitext(testPcap)[0] + 'Matrix.txt'      
-    thisArray = []
+
     #Get the average list of values for the training pcap.
     averageKnownList = averageKnownMatrix(trainingMatrix)
     testPcap = open(testPcap, 'rw')
     pcap = dpkt.pcap.Reader(testPcap)
+    
+    #Create counter for indexing
+    count = 1
   
     # For each packet in the pcap process the contents
     for timestamp, buf in pcap:
@@ -76,6 +83,15 @@ def dataEval(trainingPcap, testPcap):
             jsonList.append('Cosine Distance')
             jsonList.append(cosine_similarity(averageKnownList,row))
             jsonList.append('Minkowski Distance')
-            jsonList.append(minkowski_distance(averageKnownList,row, 3))
+            jsonList.append(minkowski_distance(averageKnownList,row, 10))
             jsonDict = dict(jsonList[i:i+2] for i in range(0, len(jsonList), 2))
+            jsonIndex = {"index":{"_index": "networktraffic" ,"_type": baseName, "_id":count}}
+            json.dump(jsonIndex, jsonFile)
+            jsonFile.write('\n')
             json.dump(jsonDict, jsonFile)
+            jsonFile.write('\n')
+            count = count + 1
+            print jsonDict
+            
+            
+            
